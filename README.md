@@ -130,6 +130,21 @@ A few notes if you're adopting this flow in your own app:
 
 ---
 
+## Installing from Git
+
+Cribl can install an app directly from source in a Git repository — no need to download the `.tgz` from the GitHub Release.
+
+In the Cribl UI, go to **Apps → Install App** and choose **Import From Git**, then fill in:
+
+| Field | Value |
+|---|---|
+| **URL** | The HTTPS Git URL of the repo (e.g. `https://github.com/criblapps/cribl-hello-apps.git`) |
+| **Branch or tag** | The release tag, e.g. `v1.0.0` |
+
+**The "Branch or tag" field is required.** If you leave it blank, the import will fail. Use the tag you pushed in the [Releasing](#releasing) step (`v1.0.0`, `v1.1.0`, etc.) so installs are pinned to a specific, reproducible version rather than tracking a moving branch.
+
+---
+
 ## Project layout
 
 ```
