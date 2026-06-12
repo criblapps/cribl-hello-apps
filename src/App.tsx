@@ -132,7 +132,9 @@ function App() {
 
   // Section 4 — platform API demo
   const [groups, setGroups] = useState<ConfigGroup[] | null>(null);
-  const [groupsStatus, setGroupsStatus] = useState<'loading' | 'ok' | 'error'>('loading');
+  const [groupsStatus, setGroupsStatus] = useState<'loading' | 'ok' | 'error'>(
+    () => (window.CRIBL_API_URL ? 'loading' : 'error'),
+  );
 
   // Section 5 — weather widget (external API via proxy)
   const [weather, setWeather] = useState<CurrentWeather | null>(null);
@@ -140,7 +142,9 @@ function App() {
 
   // Section 7 — Cribl Stream pipeline complexity
   const [topPipelines, setTopPipelines] = useState<PipelineRow[]>([]);
-  const [pipelinesStatus, setPipelinesStatus] = useState<'loading' | 'done' | 'empty' | 'error'>('loading');
+  const [pipelinesStatus, setPipelinesStatus] = useState<'loading' | 'done' | 'empty' | 'error'>(
+    () => (window.CRIBL_API_URL ? 'loading' : 'error'),
+  );
 
   // Section 6 — Cribl Search visualization
   const [searchPhase, setSearchPhase] = useState<SearchPhase>('idle');
@@ -246,11 +250,8 @@ function App() {
   // in local dev mode where CRIBL_API_URL is not set. Either way the rest
   // of the app keeps working.
   useEffect(() => {
-    if (!window.CRIBL_API_URL) {
-      setGroupsStatus('error');
-      return;
-    }
     const base = window.CRIBL_API_URL;
+    if (!base) return;
     Promise.all([
       fetch(`${base}/products/stream/groups`),
       fetch(`${base}/products/stream/workers`).catch(() => null),
@@ -307,10 +308,7 @@ function App() {
   // Any failure (no CRIBL_API_URL, no groups, 403, 404) shows the amber note.
   useEffect(() => {
     const base = window.CRIBL_API_URL;
-    if (!base) {
-      setPipelinesStatus('error');
-      return;
-    }
+    if (!base) return;
 
     async function load() {
       try {

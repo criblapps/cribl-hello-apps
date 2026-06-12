@@ -90,6 +90,46 @@ Then upload the `.tgz` to your Cribl instance under **Apps**.
 
 ---
 
+## Releasing
+
+Releases are driven by Git tags. The workflow at `.github/workflows/release.yml` triggers on any pushed tag matching `v*` — it runs `npm ci`, lints, packages the app at the tag's version (the leading `v` is stripped, so `v1.0.0` → `1.0.0`), and creates a GitHub Release with the built `.tgz` attached and auto-generated notes.
+
+You don't need to bump the version in `package.json` in a commit — the workflow stamps it from the tag name at build time.
+
+To cut a release from a clean `main`:
+
+```bash
+git tag v1.0.0
+git push origin v1.0.0
+```
+
+Then watch the run or open the release page:
+
+```bash
+gh run watch
+gh release view v1.0.0 --web
+```
+
+A few notes if you're adopting this flow in your own app:
+
+- The tag **must** start with `v` (e.g. `v1.0.0`), but the published artifact is versioned without the `v`.
+- The release step uses `fail_on_unmatched_files: true`, so the release fails if `npm run package` doesn't produce a `build/*.tgz`. To sanity-check before tagging:
+
+  ```bash
+  npm ci && npm run lint && npm run package -- --version 1.0.0
+  ls build/*.tgz
+  ```
+
+  Discard any local `package.json` version bump from the dry run — only the tagged commit matters to CI.
+- If you need to retag, delete the bad tag locally and on the remote first:
+
+  ```bash
+  git tag -d v1.0.0
+  git push origin :refs/tags/v1.0.0
+  ```
+
+---
+
 ## Project layout
 
 ```
